@@ -1,0 +1,16 @@
+# === BACKEND (server) ===
+server/node_modules/
+server/.env
+server/npm-debug.log*
+server/yarn-debug.log*
+server/pnpm-debug.log*
+
+# === FRONTEND (optional double protection) ===
+e-commerce/node_modules/
+e-commerce/dist/
+e-commerce/.env
+
+# === GLOBAL (applies everywhere) ===
+**/.DS_Store
+**/Thumbs.db
+**/.vercel
