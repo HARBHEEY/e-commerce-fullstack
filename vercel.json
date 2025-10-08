@@ -5,7 +5,7 @@
     { "src": "e-commerce/package.json", "use": "@vercel/static-build" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/server/server.js" },
-    { "src": "/(.*)", "dest": "/e-commerce/$1" }
+    { "src": "/api/(.*)", "dest": "server/server.js" },
+    { "src": "/(.*)", "dest": "e-commerce/$1" }
   ]
 }
