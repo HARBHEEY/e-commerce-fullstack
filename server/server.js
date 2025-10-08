@@ -34,6 +34,7 @@ app.use(cookieParser());
 app.use(cors({origin: allowedOrigins, credentials: true}));
 
 app.get('/', (req, res)=> res.send('API is Working...'));
+app.get('/api', (req, res)=> res.send('API endpoint is Working...'));
 app.use('/api/user', userRouter);
 app.use('/api/seller', sellerRouter);
 app.use('/api/product', productRouter);
