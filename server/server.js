@@ -23,7 +23,7 @@ await connectcloudinary()
 //CORS setup
 // Allow Multiple Origins (url) that is allowed to access our bankend
 // You can add more urls in the array if you want to allow more than one url
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['http://localhost:5173','https://greencarrt.vercel.app/']
 
 //Stripe webhook
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
