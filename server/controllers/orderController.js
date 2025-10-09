@@ -120,48 +120,40 @@ export const stripeWebhooks = async (req, res) =>{
     try {
         event = stripeInstance.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (error) {
-        response.status(400),send(`Webhook Error: ${error.message}`);
+        console.log("Webhook signature verification failed:", error.message);
+        return res.status(400),send(`Webhook Error: ${error.message}`);
     }
     //Handle the event
     switch (event.type) {
-        case "payment_intent.succeeded":{
-            const paymentIntent = event.data.object;
-            const paymentIntentId = paymentIntent.id;
-
-            //Getting session Metadata
-            const session = await stripeInstance.checkout.sessions.list({
-                payment_intent: paymentIntentId,
-            })
-
-            const {orderId, userId} = session.data[0].metadata;
+        case "checkout.session.completed":{
+            const session = event.data.object;
+            const { orderId, userId } = session.metadata;
 
             //Mark payment as paid
             await Order.findByIdAndUpdate(orderId, { isPaid: true })
 
             //Clear user cart
             await User.findByIdAndUpdate(userId, { cartItems: {} })
+
+            console.log(`Payment for order ${orderId} succeeded.`);
             break;
         }
+        case "checkout.session.async_payment_failed":
         case "payment_intent.payment_failed":{
-             const paymentIntent = event.data.object;
-            const paymentIntentId = paymentIntent.id;
-
-            //Getting session Metadata
-            const session = await stripeInstance.checkout.sessions.list({
-                payment_intent: paymentIntentId,
-            })
-
-            const {orderId } = session.data[0].metadata;
+            const session = event.data.object;
+            const {orderId } = session.metadata;
             await Order.findByIdAndDelete(orderId)
+
+            console.log(`Payment for order ${orderId} failed.`);
             break;
          } 
            
     
         default:
-            consolr.error(`Unhandled event type ${event.type}`);
+            console.error(`Unhandled event type ${event.type}`);
             break;
     }
-    response.json({received: true})
+    res.json({received: true})
 }
 
 
