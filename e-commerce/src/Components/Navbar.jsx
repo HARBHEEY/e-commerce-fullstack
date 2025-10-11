@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { useAppContext } from '../Context/AppContext'
@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false)
+    const [scrolled, setScrolled] = useState(false)
     const { user, setUser, setShowUserLogin, navigate, searchQuery, setSearchQuery, getCartCount, axios } = useAppContext();
     const logout = async () => {
         try {
@@ -26,9 +27,21 @@ const Navbar = () => {
         navigate('/products')
     }
     },[searchQuery])
+
+    // Detect scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) setScrolled(true)
+      else setScrolled(false)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+
   return (
-    <div>
-        <nav className="flex items-center justify-between  px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
+    <div className={`sticky top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-md bg-white/80 shadow-md' : 'bg-white'}`}>
+        <nav className="flex items-center justify-between  px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 relative">
 
             <NavLink to="/" onClick={() => setOpen(false)}>
             <img className='h-9' src={assets.logo} alt="logo" />
@@ -69,7 +82,7 @@ const Navbar = () => {
                     <img src={assets.nav_cart_icon} alt="cart" className='w-6 opacity-80' />
                     <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
                 </div>
-                <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="">
+                <button onClick={() => open ? setOpen(false) : setOpen(true)} aria-label="Menu" className="cursor-pointer">
                 {/* Menu Icon SVG */}
                 <img src={assets.menu_icon} alt="menu" />
             </button>
@@ -78,7 +91,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             { open && (
-              <div className={`${open ? 'flex' : 'hidden'} absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}>
+              <div className={`${open ? 'flex' : 'hidden'} fixed top-[60px] left-0 w-full bg-white h-full shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden z-[60]`}>
                 <NavLink to="/" onClick={() => setOpen(false)} className="block">Home</NavLink>
                 <NavLink to="/products" onClick={() => setOpen(false)} className="block">All products</NavLink>
                 {user &&
