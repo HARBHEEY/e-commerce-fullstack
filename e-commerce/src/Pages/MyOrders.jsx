@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../Context/AppContext'
+import { useLocation } from 'react-router-dom'
 const MyOrders = () => {
   const [myOrders, setMyorders] = useState([])
   const {currency, axios, user} = useAppContext()
+  const location = useLocation()
 
   const fetchMyOrders = async () => {
     try {
@@ -18,7 +20,7 @@ const MyOrders = () => {
     if(user){
     fetchMyOrders()
     }
-  },[user])
+  },[user, location.pathname])
 
   return (
     <div className='mt-16 pb-16'>
@@ -26,7 +28,9 @@ const MyOrders = () => {
             <p className='text-2xl font-medium uppercase'>My Orders</p>
             <div className='w-16 h-0.5 bg-primary rounded-full'></div>
         </div>
-        {myOrders.map((order, index)=>(
+        {myOrders.length === 0 ? (
+        <p className='text-gray-500 text-center mt-10'>No orders found.</p>
+      ) : (myOrders.map((order, index)=>(
           <div key={index} className='border border-gray-300 rounded-lg mb-10 p-4 py-5 max-w-4xl'>
             <p className='flex justify-between md:items-center text-gray-400 md:font-medium max-md:flex-col'>
               <span>OrderId : {order._id}</span>
@@ -57,7 +61,7 @@ const MyOrders = () => {
               </div>
             ))}
           </div>
-        ))}
+        )))}
     </div>
   )
 }
